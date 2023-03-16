@@ -38,6 +38,8 @@ exports.modifySauce = (req, res, next) => {
 
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
+       
+      console.log("sauce")
       if (sauce.userId != req.auth.userId) {
         res.status(401).json({ message: 'Non autorisé' });
       } else {
@@ -78,8 +80,7 @@ exports.deleteSauce = (req, res, next) => {
 exports.getOneSauce = (req, res, next) => {
   
   Sauce.findOne({_id: req.params.id })
-    .then((sauce) =>{ res.status(200).json(sauce) 
-      console.log("coucou")})
+    .then((sauce) =>{ res.status(200).json(sauce)})
     .catch((error) => res.status(404).json({ error }));
 };
 
