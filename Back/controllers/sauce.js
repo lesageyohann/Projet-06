@@ -1,6 +1,7 @@
 const Sauce = require('../models/sauce');
 const fs = require('fs');
 
+/********************************************************************** */
 exports.createSauce = (req, res, next) => {
   const sauceObjet = JSON.parse(req.body.sauce);
   delete sauceObjet._id;
@@ -13,6 +14,7 @@ exports.createSauce = (req, res, next) => {
       req.file.filename
     }`,
   });
+  
 
   sauce
     .save()
@@ -24,6 +26,7 @@ exports.createSauce = (req, res, next) => {
     });
 };
 
+/********************************************************************** */
 exports.modifySauce = (req, res, next) => {
   const sauceObjet = req.file
     ? {
@@ -37,8 +40,7 @@ exports.modifySauce = (req, res, next) => {
   delete sauceObjet._userId;
 
   Sauce.findOne({ _id: req.params.id })
-    .then((sauce) => {
-       
+    .then((sauce) => {       
       console.log("sauce")
       if (sauce.userId != req.auth.userId) {
         res.status(401).json({ message: 'Non autorisé' });
@@ -56,6 +58,7 @@ exports.modifySauce = (req, res, next) => {
     });
 };
 
+/********************************************************************** */
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
@@ -77,6 +80,7 @@ exports.deleteSauce = (req, res, next) => {
     });
 };
 
+/********************************************************************** */
 exports.getOneSauce = (req, res, next) => {
   
   Sauce.findOne({_id: req.params.id })
@@ -84,6 +88,7 @@ exports.getOneSauce = (req, res, next) => {
     .catch((error) => res.status(404).json({ error }));
 };
 
+/********************************************************************** */
 exports.getAllSauces = (req, res, next) => {
   Sauce.find()
     .then((sauces) => res.status(200).json(sauces))
