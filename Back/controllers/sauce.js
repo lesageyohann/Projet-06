@@ -105,14 +105,16 @@ exports.likeSauce = (req, res, next) => {
   const idSauce = req.params.id;
   const stateLike = req.body.like;
 
-  const allowedLike = [-1, 0, 1];
+  /*const allowedLike = [-1, 0, 1];
+  console.log(stateLike)
   if (!allowedLike.includes(stateLike)) {
     return res.status(400).json({ message: 'Action non autorisé' });
-  }
+  }*/
 
   Sauce.findOne({ _id: idSauce })
     .then((sauce) => {
       // Switch état like
+      console.log(sauce)
       switch (stateLike) {
         case 1:
           if (sauce.usersLiked.includes(idUser) && stateLike === 1) {

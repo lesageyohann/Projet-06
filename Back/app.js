@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const helmet = require("helmet");
 const dotenv = require('dotenv');
+const mongoSanitize = require('express-mongo-sanitize');
 dotenv.config();
 
 const userRoutes = require('./routes/user');
@@ -44,6 +45,7 @@ app.use('/api/sauces', sauceRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(helmet());
+app.use(mongoSanitize());
 
 
 
