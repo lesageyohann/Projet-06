@@ -101,106 +101,59 @@ exports.getAllSauces = (req, res, next) => {
 
 /********************************************************************** */
 exports.likeSauce = (req, res, next) => {
-  const idUser = req.body.userId;
-  const idSauce = req.params.id;
-  const stateLike = req.body.like;
 
-  /*const allowedLike = [-1, 0, 1];
-  console.log(stateLike)
-  if (!allowedLike.includes(stateLike)) {
-    return res.status(400).json({ message: 'Action non autorisé' });
-  }*/
+  /* Switch like */
+  if (![1, -1, 0].includes(req.body.like)) 
+      return res.status(403).send({message: 'Valeur non valide'});
 
-  Sauce.findOne({ _id: idSauce })
+  Sauce.findOne({_id: req.params.id})
+  /* Like +1 */
     .then((sauce) => {
-      // Switch état like
-      console.log(sauce)
-      switch (stateLike) {
-        case 1:
-          if (sauce.usersLiked.includes(idUser) && stateLike === 1) {
-            res.status(400).json({ message: 'Action non autorisée' });
-            return;
+        if (req.body.like === 1) {
+          if (!sauce.usersLiked.includes(req.body.userId)) {
+            sauce.likes++
+            sauce.usersLiked.push(req.body.userId)
+            sauce.save()
+              .then(() => { res.status(201).json({message: 'Like +1'})})
+              .catch(error => { res.status(400).json( { error })})
           }
-
-          if ( sauce.usersDisliked.includes(idUser) && stateLike === 1) {
-            res.status(400).json({ message: 'Action non autorisée' });
-            return;
+          else {
+            return res.status(400).json({message: 'Sauce déjà liké'});
           }
-
-          //like
-          if (!sauce.usersLiked.includes(idUser) && stateLike === 1) {
-            Sauce.updateOne(
-              { _id: idSauce },
-              { $inc: { likes: 1 }, $push: { usersLiked: idUser } }
-            )
-              .then(() =>
-                res.status(201).json({ message: 'Like ajouté' })
-              )
-              .catch((error) => res.status(400).json({ error }));
+        }
+  /* Like -1 */
+        if (req.body.like === 0) {
+          if (sauce.usersLiked.includes(req.body.userId)) {
+            sauce.likes--
+            sauce.usersLiked = sauce.usersLiked.filter(user => user !== req.body.userId)
+            sauce.save()
+              .then(() => { res.status(201).json({message: 'Like -1'})})
+              .catch(error => { res.status(400).json( { error })})
           }
-
-          break;
-
-        case -1:
-          if (sauce.usersLiked.includes(idUser) && stateLike === -1) {
-            res.status(400).json({ message: 'Action non autorisée' });
-            return;
+  /* Dislike -1 */
+          if (sauce.usersDisliked.includes(req.body.userId)) {
+            sauce.dislikes--
+            sauce.usersDisliked = sauce.usersDisliked.filter(user => user !== req.body.userId)
+            sauce.save()
+              .then(() => { res.status(201).json({message: 'Dislike -1'})})
+              .catch(error => { res.status(400).json( { error })})
           }
-
-          //dislike
-          if (!sauce.usersDisliked.includes(idUser) && stateLike === -1) {
-            Sauce.updateOne(
-              { _id: idSauce },
-              {
-                $inc: { dislikes: 1 },
-                $push: { usersDisliked: idUser },
-              }
-            )
-              .then(() =>
-                res.status(201).json({ message: 'Dislike ajouté' })
-              )
-              .catch((error) => res.status(400).json({ error }));
+        }
+  /* Dislike +1 */
+        if (req.body.like === -1) {
+          if (sauce.usersDisliked.includes(req.body.userId)) {
+            sauce.dislikes++
+            sauce.usersDisliked.push(req.body.userId)
+            sauce.save()
+              .then(() => { res.status(201).json({message: 'Dislike +1'})})
+              .catch(error => { res.status(400).json( { error })})
           }
-
-          break;
-
-        case 0:
-          if (!sauce.usersDisliked.includes(idUser) && !sauce.usersLiked.includes(idUser)) {
-            res.status(400).json({ message: 'Action non autorisée' });
-            return;
+          else {
+            return res.status(400).json({message: 'Sauce déja dislike'});
           }
-
-          //Annuler like
-          if (sauce.usersLiked.includes(idUser)) {
-            Sauce.updateOne(
-              { _id: idSauce },
-              { $inc: { likes: -1 }, $pull: { usersLiked: idUser } }
-            )
-              .then(() =>
-                res
-                  .status(201)
-                  .json({ message: 'Like retiré' })
-              )
-              .catch((error) => res.status(400).json({ error }));
-          }
-          //Annuler dislike
-          if (sauce.usersDisliked.includes(idUser)) {
-            Sauce.updateOne(
-              { _id: idSauce },
-              {
-                $inc: { dislikes: -1 },
-                $pull: { usersDisliked: idUser },
-              }
-            )
-              .then(() =>
-                res
-                  .status(201)
-                  .json({ message: 'Dislike retiré' })
-              )
-              .catch((error) => res.status(400).json({ error }));
-          }
-          break;
-      }
-    })
-    .catch((error) => res.status(500).json({ error }));
+        }
+      })
+    .catch((error) => {
+        res.status(400).json({ error });
+    });
 };
