@@ -102,17 +102,20 @@ exports.getAllSauces = (req, res, next) => {
 /********************************************************************** */
 exports.likeSauce = (req, res, next) => {
 
+  const userid = req.auth.userId
+  const like = req.body.like
+
   /* Switch like */
-  if (![1, -1, 0].includes(req.body.like)) 
+  if (![1, -1, 0].includes(like)) 
       return res.status(403).send({message: 'Valeur non valide'});
 
   Sauce.findOne({_id: req.params.id})
   /* Like +1 */
     .then((sauce) => {
-        if (req.body.like === 1) {
-          if (!sauce.usersLiked.includes(req.body.userId)) {
+        if (like === 1) {
+          if (!sauce.usersLiked.includes(userid)) {
             sauce.likes++
-            sauce.usersLiked.push(req.body.userId)
+            sauce.usersLiked.push(userid)
             sauce.save()
               .then(() => { res.status(201).json({message: 'Like +1'})})
               .catch(error => { res.status(400).json( { error })})
@@ -122,28 +125,29 @@ exports.likeSauce = (req, res, next) => {
           }
         }
   /* Like -1 */
-        if (req.body.like === 0) {
-          if (sauce.usersLiked.includes(req.body.userId)) {
+        if (like === 0) {
+          if (sauce.usersLiked.includes(userid)) {
             sauce.likes--
-            sauce.usersLiked = sauce.usersLiked.filter(user => user !== req.body.userId)
+            sauce.usersLiked.filter(user => user !== userid)
             sauce.save()
               .then(() => { res.status(201).json({message: 'Like -1'})})
               .catch(error => { res.status(400).json( { error })})
+              console.log(userid)
           }
   /* Dislike -1 */
-          if (sauce.usersDisliked.includes(req.body.userId)) {
+          if (sauce.usersDisliked.includes(userid)) {
             sauce.dislikes--
-            sauce.usersDisliked = sauce.usersDisliked.filter(user => user !== req.body.userId)
+            sauce.usersDisliked.filter(user => user !== userid)
             sauce.save()
               .then(() => { res.status(201).json({message: 'Dislike -1'})})
               .catch(error => { res.status(400).json( { error })})
           }
         }
   /* Dislike +1 */
-        if (req.body.like === -1) {
-          if (sauce.usersDisliked.includes(req.body.userId)) {
+        if (like === -1) {
+          if (sauce.usersDisliked.includes(userid)) {
             sauce.dislikes++
-            sauce.usersDisliked.push(req.body.userId)
+            sauce.usersDisliked.push(userid)
             sauce.save()
               .then(() => { res.status(201).json({message: 'Dislike +1'})})
               .catch(error => { res.status(400).json( { error })})
