@@ -128,16 +128,16 @@ exports.likeSauce = (req, res, next) => {
         if (like === 0) {
           if (sauce.usersLiked.includes(userid)) {
             sauce.likes--
-            sauce.usersLiked.filter(user => user !== userid)
+            sauce.usersLiked = sauce.usersLiked.filter(user => user !== userid)
             sauce.save()
               .then(() => { res.status(201).json({message: 'Like -1'})})
               .catch(error => { res.status(400).json( { error })})
-              console.log(userid)
+              console.log(sauce.usersLiked);
           }
   /* Dislike -1 */
           if (sauce.usersDisliked.includes(userid)) {
             sauce.dislikes--
-            sauce.usersDisliked.filter(user => user !== userid)
+            sauce.usersDisliked = sauce.usersDisliked.filter(user => user !== userid)
             sauce.save()
               .then(() => { res.status(201).json({message: 'Dislike -1'})})
               .catch(error => { res.status(400).json( { error })})
@@ -145,7 +145,7 @@ exports.likeSauce = (req, res, next) => {
         }
   /* Dislike +1 */
         if (like === -1) {
-          if (sauce.usersDisliked.includes(userid)) {
+          if (!sauce.usersDisliked.includes(userid)) {
             sauce.dislikes++
             sauce.usersDisliked.push(userid)
             sauce.save()

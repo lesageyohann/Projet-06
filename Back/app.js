@@ -16,7 +16,7 @@ const app = express();
 
 mongoose
   .connect(
-    "mongodb+srv://Yohann:ElDgUNxvP2t6EaLD@hotsauce.f8tvhcc.mongodb.net/test",
+    `mongodb+srv://${process.env.login}:${process.env.password}@hotsauce.f8tvhcc.mongodb.net/test`,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
