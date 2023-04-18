@@ -3,6 +3,8 @@ const app = require("./app");
 const dotenv = require('dotenv');
 dotenv.config();
 
+/*** Création servers ***/
+/* Normalisation du port */ 
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
 

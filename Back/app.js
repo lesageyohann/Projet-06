@@ -13,6 +13,7 @@ const sauceRoutes = require('./routes/sauce');
 
 const app = express();
 
+/*** Connection Mongoose ***/
 
 mongoose
   .connect(
@@ -22,6 +23,9 @@ mongoose
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
  
+
+  /*** Configuration CORS ***/
+
   app.use(express.json());
 
   app.use((req, res, next) => {
@@ -36,6 +40,8 @@ mongoose
     );
     next();
   });
+
+/*** Configuration Express ***/
 
 app.use(express.json());
 

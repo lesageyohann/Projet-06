@@ -1,7 +1,10 @@
 const Sauce = require('../models/sauce');
 const fs = require('fs');
 
-/********************************************************************** */
+/*****  Création sauce  *****/
+/* Récupération des informations de la requête POST représentant le schéma et l'image */
+/* Création d'une nouvelle Sauce en utilisant le modèle et ajout différentes propriétées */
+/* Sauvegarde de la sauce et message confirmation */
 exports.createSauce = (req, res, next) => {
   const sauceObjet = JSON.parse(req.body.sauce);
   delete sauceObjet._id;
@@ -30,7 +33,10 @@ exports.createSauce = (req, res, next) => {
     });
 };
 
-/********************************************************************** */
+/*****  Modifier sauce  *****/
+/* Récupération information sauce + vérifié auth userID */
+/* Si ID valide alors création d'un objet sauceObjet pour modification puis mise à jour BDD*/
+/* Envoie réponse 200 si valide */
 exports.modifySauce = (req, res, next) => {
   const sauceObjet = req.file
     ? {
@@ -62,7 +68,10 @@ exports.modifySauce = (req, res, next) => {
     });
 };
 
-/********************************************************************** */
+/*****  Supprimer sauce  *****/
+/* Rechercher sauce correspondant à l'ID dans parametres requête*/
+/* Si ID corresponant a ID créateur alors supprimer sauce et envoi confirmation */
+/* Si ID pas correspondant alors envoyé code erreure */
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
@@ -84,7 +93,8 @@ exports.deleteSauce = (req, res, next) => {
     });
 };
 
-/********************************************************************** */
+/*****  Récuperer une sauce  *****/
+/* Récupération d'une sauce en fonction parametre ID */
 exports.getOneSauce = (req, res, next) => {
   
   Sauce.findOne({_id: req.params.id })
@@ -92,25 +102,30 @@ exports.getOneSauce = (req, res, next) => {
     .catch((error) => res.status(404).json({ error }));
 };
 
-/********************************************************************** */
+/*****  Récuperer plusieur sauces  *****/
+/* récupération de tout les sauce du tableau */
 exports.getAllSauces = (req, res, next) => {
   Sauce.find()
     .then((sauces) => res.status(200).json(sauces))
     .catch((error) => res.status(400).json({ error }));
 };
 
-/********************************************************************** */
+/*****  Gestion Like  *****/
 exports.likeSauce = (req, res, next) => {
 
   const userid = req.auth.userId
   const like = req.body.like
 
   /* Switch like */
+  /* Gestion valeur -1 / 0 / -1 */
   if (![1, -1, 0].includes(like)) 
       return res.status(403).send({message: 'Valeur non valide'});
 
   Sauce.findOne({_id: req.params.id})
+
   /* Like +1 */
+  /* Si like = 1 et utilisateur absent du tableau alors like +1, ajout utilisateur et save */
+  /* Sinon afficher message */
     .then((sauce) => {
         if (like === 1) {
           if (!sauce.usersLiked.includes(userid)) {
@@ -124,7 +139,9 @@ exports.likeSauce = (req, res, next) => {
             return res.status(400).json({message: 'Sauce déjà liké'});
           }
         }
+
   /* Like -1 */
+  /* like = 0 et utilisateur dans le tableau alors like -1, supprression utilisateur et save */
         if (like === 0) {
           if (sauce.usersLiked.includes(userid)) {
             sauce.likes--
@@ -132,9 +149,10 @@ exports.likeSauce = (req, res, next) => {
             sauce.save()
               .then(() => { res.status(201).json({message: 'Like -1'})})
               .catch(error => { res.status(400).json( { error })})
-              console.log(sauce.usersLiked);
           }
+
   /* Dislike -1 */
+  /* Si  utilisateur dans le tableau alors dislike -1, suppression utilisateur et save */
           if (sauce.usersDisliked.includes(userid)) {
             sauce.dislikes--
             sauce.usersDisliked = sauce.usersDisliked.filter(user => user !== userid)
@@ -143,7 +161,10 @@ exports.likeSauce = (req, res, next) => {
               .catch(error => { res.status(400).json( { error })})
           }
         }
+        
   /* Dislike +1 */
+  /* Si like = -1 et utilisateur absent du tableau alors dislike -1, ajout utilisateur et save */
+  /* Sinon afficher message */
         if (like === -1) {
           if (!sauce.usersDisliked.includes(userid)) {
             sauce.dislikes++

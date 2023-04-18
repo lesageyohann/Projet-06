@@ -4,6 +4,10 @@ const dotenv = require('dotenv');
 const User = require('../models/user');
 dotenv.config();
 
+/*****  Création Utilisateur *****/
+/* Cryptage du mot de passe */
+/* Création d'un nouvel utilisateur email + password crypté */
+/* Sauvegarde de l'objet user dans la BDD */
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
       .then(hash => {
@@ -18,6 +22,12 @@ exports.signup = (req, res, next) => {
       .catch(error => res.status(500).json({ error }));
   };
 
+
+  /*****  Connection Utilisateur  *****/
+  /* Recherche utilisateur dans BDD */
+  /* Si utilisateur trouvé comparer password avec password BDD avec bcrypt */
+  /* Si password valide alors création Token d'identification */
+  /* Sinon message erreur */
   exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {

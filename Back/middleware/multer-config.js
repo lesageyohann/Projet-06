@@ -1,5 +1,10 @@
 const multer = require('multer');
 
+/*****  Module Multer *****/
+/* Définition des extentions images */
+/* Définition du répertoire de stockage */
+/* Définition du nom de fichier ( nom d'origine + supression espace + date) */
+
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',

@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+/*****  Définition route sauce  *****/
+/* Récupération middleware auth et multer */
+/* Récupération controller sauce */
+/* Définition des routes et requête avec module exporté et middleware */
+
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 

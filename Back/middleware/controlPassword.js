@@ -1,5 +1,9 @@
 const passwordValidator = require('password-validator');
 
+/*****  Module Password  *****/
+/* Création d'un schéma pour le password : entre 8 et 100 caractères dont au moins 1 majuscules 1 minuscule 2 chiffres et sans espaces */
+/* Exportation du schéma pour comparaisonn fonction next si valide sinon message erreur */
+
 const schema = new passwordValidator();
 
 schema
